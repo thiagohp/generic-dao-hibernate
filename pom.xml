@@ -3,15 +3,16 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>net.sf.arsmachina</groupId>
+	<groupId>br.com.arsmachina</groupId>
 	<artifactId>generic-dao-hibernate</artifactId>
 	<packaging>jar</packaging>
 	<version>1.0</version>
-	<name>Hibernate Generic Data Access Object (DAO) implementation using Hibernate</name>
+	<name>Generic DAO-Hibernate</name>
+	<description>Hibernate Generic Data Access Object (DAO) implementation using Hibernate</description>
 	<inceptionYear>2008</inceptionYear>
 	<url>http://ars-machina.sourceforge.net/generic-dao</url>
 	<parent>
-		<groupId>net.sf.arsmachina</groupId>
+		<groupId>br.com.arsmachina</groupId>
 		<artifactId>parent</artifactId>
 		<version>1.0</version>
 		<relativePath>../parent/pom.xml</relativePath>
@@ -65,13 +66,14 @@
 			<artifactId>cglib-nodep</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.arsmachina</groupId>
+			<groupId>br.com.arsmachina</groupId>
 			<artifactId>generic-dao</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>hsqldb</groupId>
 			<artifactId>hsqldb</artifactId>
 			<version>1.8.0.7</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 </project>

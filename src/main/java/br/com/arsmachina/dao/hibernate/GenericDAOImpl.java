@@ -12,16 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package net.sf.arsmachina.dao.hibernate;
+package br.com.arsmachina.dao.hibernate;
 
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.List;
 
-import net.sf.arsmachina.dao.DAO;
-import net.sf.arsmachina.dao.SortCriterion;
-import net.sf.arsmachina.dao.WriteableDAO;
 
 import org.hibernate.Criteria;
 import org.hibernate.EntityMode;
@@ -31,6 +28,10 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.metadata.ClassMetadata;
+
+import br.com.arsmachina.dao.DAO;
+import br.com.arsmachina.dao.SortCriterion;
+import br.com.arsmachina.dao.WriteableDAO;
 
 /**
  * {@link AbstractDAO} implementation using Hibernate. All methods use {@link #getSession()} to get
@@ -60,7 +61,7 @@ public abstract class GenericDAOImpl<T, K extends Serializable> implements DAO<T
 	final private String defaultHqlOrderBy = toHqlOrderBy(getDefaultSortCriteria());
 
 	/**
-	 * @see net.sf.arsmachina.dao.ReadableDAO#countAll()
+	 * @see br.com.arsmachina.dao.ReadableDAO#countAll()
 	 */
 	public int countAll() {
 		
@@ -128,7 +129,7 @@ public abstract class GenericDAOImpl<T, K extends Serializable> implements DAO<T
 	 * Returns all the entity class' objects. They are sorted according to
 	 * {@link #getDefaultSortCriterions()}.
 	 * 
-	 * @see net.sf.arsmachina.dao.ReadableDAO#findAll()
+	 * @see br.com.arsmachina.dao.ReadableDAO#findAll()
 	 * @see #getDefaultSortCriterions()
 	 */
 	@SuppressWarnings("unchecked")
@@ -141,7 +142,7 @@ public abstract class GenericDAOImpl<T, K extends Serializable> implements DAO<T
 	}
 
 	/**
-	 * @see net.sf.arsmachina.dao.ReadableDAO#findById(java.io.Serializable)
+	 * @see br.com.arsmachina.dao.ReadableDAO#findById(java.io.Serializable)
 	 */
 	@SuppressWarnings("unchecked")
 	public T findById(K id) {
@@ -149,7 +150,7 @@ public abstract class GenericDAOImpl<T, K extends Serializable> implements DAO<T
 	}
 
 	/**
-	 * @see net.sf.arsmachina.dao.ReadableDAO#findByIds(K[])
+	 * @see br.com.arsmachina.dao.ReadableDAO#findByIds(K[])
 	 */
 	@SuppressWarnings("unchecked")
 	public List<T> findByIds(K... ids) {
@@ -161,28 +162,28 @@ public abstract class GenericDAOImpl<T, K extends Serializable> implements DAO<T
 	}
 
 	/**
-	 * @see net.sf.arsmachina.dao.WriteableDAO#delete(java.io.Serializable)
+	 * @see br.com.arsmachina.dao.WriteableDAO#delete(java.io.Serializable)
 	 */
 	public void delete(K id) {
 		delete(findById(id));
 	}
 
 	/**
-	 * @see net.sf.arsmachina.dao.WriteableDAO#delete(java.lang.Object)
+	 * @see br.com.arsmachina.dao.WriteableDAO#delete(java.lang.Object)
 	 */
 	public void delete(T object) {
 		getSession().delete(object);
 	}
 
 	/**
-	 * @see net.sf.arsmachina.dao.WriteableDAO#evict(java.lang.Object)
+	 * @see br.com.arsmachina.dao.WriteableDAO#evict(java.lang.Object)
 	 */
 	public void evict(T object) {
 		getSession().evict(object);
 	}
 
 	/**
-	 * @see net.sf.arsmachina.dao.WriteableDAO#merge(java.lang.Object)
+	 * @see br.com.arsmachina.dao.WriteableDAO#merge(java.lang.Object)
 	 */
 	@SuppressWarnings("unchecked")
 	public T merge(T object) {
@@ -190,21 +191,21 @@ public abstract class GenericDAOImpl<T, K extends Serializable> implements DAO<T
 	}
 
 	/**
-	 * @see net.sf.arsmachina.dao.WriteableDAO#save(java.lang.Object)
+	 * @see br.com.arsmachina.dao.WriteableDAO#save(java.lang.Object)
 	 */
 	public void save(T object) {
 		getSession().save(object);
 	}
 
 	/**
-	 * @see net.sf.arsmachina.dao.WriteableDAO#update(java.lang.Object)
+	 * @see br.com.arsmachina.dao.WriteableDAO#update(java.lang.Object)
 	 */
 	public void update(T object) {
 		getSession().update(object);
 	}
 
 	/**
-	 * @see net.sf.arsmachina.dao.WriteableDAO#refresh(java.lang.Object)
+	 * @see br.com.arsmachina.dao.WriteableDAO#refresh(java.lang.Object)
 	 */
 	public void refresh(T object) {
 		getSession().refresh(object);
@@ -223,7 +224,7 @@ public abstract class GenericDAOImpl<T, K extends Serializable> implements DAO<T
 	 * Returns <code>true</code> if the primary key field (identifier) of the given object is not
 	 * null. Its value is obtained via {@link ClassMetadata#getIdentifier(Object, EntityMode)}.
 	 * 
-	 * @see net.sf.arsmachina.dao.WriteableDAO#isPersistent(java.lang.Object)
+	 * @see br.com.arsmachina.dao.WriteableDAO#isPersistent(java.lang.Object)
 	 */
 	public boolean isPersistent(T object) {
 		return classMetadata.getIdentifier(object, EntityMode.POJO) != null;
@@ -234,8 +235,8 @@ public abstract class GenericDAOImpl<T, K extends Serializable> implements DAO<T
 	 * sort the results by the {@link SortCriterion}s returned by
 	 * {@link #getDefaultSortCriterions()}.
 	 * 
-	 * @see net.sf.arsmachina.dao.ReadableDAO#findAll(int, int,
-	 * net.sf.arsmachina.dao.SortCriterion[])
+	 * @see br.com.arsmachina.dao.ReadableDAO#findAll(int, int,
+	 * br.com.arsmachina.dao.SortCriterion[])
 	 */
 	@SuppressWarnings("unchecked")
 	public List<T> findAll(int firstResult, int maxResults, SortCriterion... sortingConstraints) {

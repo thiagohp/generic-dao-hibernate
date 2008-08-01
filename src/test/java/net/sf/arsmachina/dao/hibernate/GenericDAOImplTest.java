@@ -1,7 +1,5 @@
 package net.sf.arsmachina.dao.hibernate;
 
-import net.sf.arsmachina.dao.DAO;
-import net.sf.arsmachina.dao.hibernate.GenericDAOImpl;
 
 import org.easymock.EasyMock;
 import org.hibernate.SessionFactory;
@@ -11,6 +9,9 @@ import org.hibernate.metadata.ClassMetadata;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
+import br.com.arsmachina.dao.DAO;
+import br.com.arsmachina.dao.hibernate.GenericDAOImpl;
 
 /**
  * Test class for {@link GenericDAOImpl}.

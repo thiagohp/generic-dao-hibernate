@@ -1,4 +1,4 @@
-package net.sf.arsmachina.dao.hibernate;
+package br.com.arsmachina.dao.hibernate;
 
 
 import org.easymock.EasyMock;

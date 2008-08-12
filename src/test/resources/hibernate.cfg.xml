@@ -20,7 +20,7 @@
 		<property name="hibernate.show_sql">true</property>
   		<property name="hibernate.hbm2ddl.auto">create</property>
 
-		<mapping class="net.sf.arsmachina.dao.hibernate.DummyClass" />
+		<mapping class="br.com.arsmachina.dao.hibernate.DummyClass" />
 		
 	</session-factory>
 

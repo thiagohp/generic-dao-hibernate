@@ -6,15 +6,15 @@
 	<groupId>br.com.arsmachina</groupId>
 	<artifactId>generic-dao-hibernate</artifactId>
 	<packaging>jar</packaging>
-	<version>1.0</version>
+	<version>0.9</version>
 	<name>Generic DAO-Hibernate</name>
 	<description>Hibernate Generic Data Access Object (DAO) implementation using Hibernate</description>
 	<inceptionYear>2008</inceptionYear>
-	<url>http://ars-machina.sourceforge.net/generic-dao</url>
+	<url>http://www.arsmachina.com.br/project/generic-dao</url>
 	<parent>
 		<groupId>br.com.arsmachina</groupId>
 		<artifactId>parent</artifactId>
-		<version>1.0</version>
+		<version>0.9</version>
 		<relativePath>../parent/pom.xml</relativePath>
 	</parent>
 	<dependencies>

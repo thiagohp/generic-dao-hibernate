@@ -117,7 +117,7 @@ public abstract class GenericDAOImpl<T, K extends Serializable> implements DAO<T
 		final ParameterizedType parameterizedType = ((ParameterizedType) genericSuperclass);
 		entityClass = (Class<T>) parameterizedType.getActualTypeArguments()[0];
 		classMetadata = sessionFactory.getClassMetadata(entityClass);
-		
+
 		if (classMetadata == null) {
 			throw new RuntimeException("Class " + entityClass.getName() + " is not mapped");
 		}

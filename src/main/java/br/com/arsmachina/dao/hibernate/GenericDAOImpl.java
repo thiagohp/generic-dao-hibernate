@@ -19,7 +19,6 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.List;
 
-
 import org.hibernate.Criteria;
 import org.hibernate.EntityMode;
 import org.hibernate.SessionFactory;
@@ -31,7 +30,6 @@ import org.hibernate.metadata.ClassMetadata;
 
 import br.com.arsmachina.dao.DAO;
 import br.com.arsmachina.dao.SortCriterion;
-import br.com.arsmachina.dao.WriteableDAO;
 
 /**
  * {@link AbstractDAO} implementation using Hibernate. All methods use {@link #getSession()} to get
@@ -42,8 +40,7 @@ import br.com.arsmachina.dao.WriteableDAO;
  * @param <T> the entity class related to this DAO.
  * @param <K> the type of the field that represents the entity class' primary key.
  */
-public abstract class GenericDAOImpl<T, K extends Serializable> implements DAO<T, K>,
-		WriteableDAO<T, K> {
+public abstract class GenericDAOImpl<T, K extends Serializable> implements DAO<T, K> {
 
 	/**
 	 * A {@link SortCriterion} array with no elements.
@@ -61,25 +58,12 @@ public abstract class GenericDAOImpl<T, K extends Serializable> implements DAO<T
 	final private String defaultHqlOrderBy = toHqlOrderBy(getDefaultSortCriteria());
 
 	/**
-	 * @see br.com.arsmachina.dao.ReadableDAO#countAll()
-	 */
-	public int countAll() {
-		
-		final Criteria criteria = createCriteria();
-		
-		criteria.setProjection(Projections.rowCount());
-		
-		return (Integer) criteria.uniqueResult();
-		
-	}
-
-	/**
 	 * Returns a HQL <code>order by</code> clause given some {@link SortCriterion}s.
 	 * 
 	 * @param sortCriteria {@link SortCriterion} instances.
 	 * @return a {@link String}.
 	 */
-	public static String toHqlOrderBy(SortCriterion... sortCriteria) {
+	final public static String toHqlOrderBy(SortCriterion... sortCriteria) {
 
 		String string = "";
 
@@ -130,6 +114,19 @@ public abstract class GenericDAOImpl<T, K extends Serializable> implements DAO<T
 
  	}
 
+	/**
+	 * @see br.com.arsmachina.dao.ReadableDAO#countAll()
+	 */
+	public int countAll() {
+		
+		final Criteria criteria = createCriteria();
+		
+		criteria.setProjection(Projections.rowCount());
+		
+		return (Integer) criteria.uniqueResult();
+		
+	}
+	
 	/**
 	 * Returns all the entity class' objects. They are sorted according to
 	 * {@link #getDefaultSortCriterions()}.
@@ -267,7 +264,7 @@ public abstract class GenericDAOImpl<T, K extends Serializable> implements DAO<T
 	 * @param sortCriteria a {@link SortCriterion}<code>...</code>. It cannot be null.
 	 * @todo Support for property paths, not just property names.
 	 */
-	protected void addSortCriteria(Criteria criteria, SortCriterion... sortCriteria) {
+	final public static void addSortCriteria(Criteria criteria, SortCriterion... sortCriteria) {
 
 		assert sortCriteria != null;
 		assert criteria != null;

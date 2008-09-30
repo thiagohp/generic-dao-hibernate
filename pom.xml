@@ -10,7 +10,7 @@
 	<name>Generic DAO-Hibernate</name>
 	<description>Hibernate Generic Data Access Object (DAO) implementation using Hibernate</description>
 	<inceptionYear>2008</inceptionYear>
-	<url>http://www.arsmachina.com.br/project/generic-dao</url>
+	<url>http://www.arsmachina.com.br/project/genericdao</url>
 	<parent>
 		<groupId>br.com.arsmachina</groupId>
 		<artifactId>parent</artifactId>

@@ -16,7 +16,7 @@ import br.com.arsmachina.dao.hibernate.GenericDAOImpl;
 /**
  * Test class for {@link GenericDAOImpl}.
  * 
- * @author Thiago H. de Paula Figueiredo (ThiagoHP)
+ * @author Thiago H. de Paula Figueiredo
  */
 public class GenericDAOImplTest {
 

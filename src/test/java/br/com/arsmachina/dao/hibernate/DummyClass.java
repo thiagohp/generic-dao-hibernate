@@ -19,7 +19,7 @@ import javax.persistence.Id;
 
 /**
  * 
- * @author Thiago H. de Paula Figueiredo (ThiagoHP)
+ * @author Thiago H. de Paula Figueiredo
  */
 @Entity
 public class DummyClass {

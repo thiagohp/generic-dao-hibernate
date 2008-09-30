@@ -38,7 +38,7 @@ import com.mchange.v2.c3p0.ComboPooledDataSource;
  * properties is read from a <code>hibernate.cfg.xml</code> file, also in the root of the
  * classpath.
  * 
- * @author Thiago H. de Paula Figueiredo (ThiagoHP)
+ * @author Thiago H. de Paula Figueiredo
  */
 @Configuration(defaultLazy = Lazy.TRUE)
 @ResourceBundles( { "classpath:/datasource" })

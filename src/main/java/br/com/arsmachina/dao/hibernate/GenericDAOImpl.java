@@ -23,6 +23,8 @@ import org.hibernate.Criteria;
 import org.hibernate.EntityMode;
 import org.hibernate.SessionFactory;
 import org.hibernate.classic.Session;
+import org.hibernate.criterion.Example;
+import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
@@ -36,7 +38,7 @@ import br.com.arsmachina.dao.SortCriterion;
  * a {@link Session}.
  * 
  * 
- * @author Thiago H. de Paula Figueiredo (ThiagoHP)
+ * @author Thiago H. de Paula Figueiredo
  * @param <T> the entity class related to this DAO.
  * @param <K> the type of the field that represents the entity class' primary key.
  */
@@ -161,6 +163,22 @@ public abstract class GenericDAOImpl<T, K extends Serializable> implements DAO<T
 		criteria.add(Restrictions.in(primaryKeyPropertyName, ids));
 		return criteria.list();
 
+	}
+
+	/** 
+	 * @see br.com.arsmachina.dao.ReadableDAO#findByExample(java.lang.Object)
+	 */
+	@SuppressWarnings("unchecked")
+	public List<T> findByExample(T example) {
+		
+		Criteria criteria = createCriteria();
+		
+		if (example != null) {
+			criteria.add(createExample(example));
+		}
+		
+		return criteria.list();
+		
 	}
 
 	/**
@@ -326,6 +344,22 @@ public abstract class GenericDAOImpl<T, K extends Serializable> implements DAO<T
 	 */
 	protected Criteria createCriteria() {
 		return getSession().createCriteria(entityClass);
+	}
+
+	/**
+	 * Used by {@link #findByExample(Object)} to create an {@link Example} instance.
+	 * 
+	 * @return an {@link Example}.
+	 */
+	protected Example createExample(T entity) {
+		
+		Example example = Example.create(entity);
+		example.enableLike(MatchMode.ANYWHERE);
+		example.excludeZeroes();
+		example.ignoreCase();
+		
+		return example;
+		
 	}
 
 	/**

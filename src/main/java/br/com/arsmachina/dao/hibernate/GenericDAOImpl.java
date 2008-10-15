@@ -20,14 +20,9 @@ import java.lang.reflect.Type;
 import java.util.List;
 
 import org.hibernate.Criteria;
-import org.hibernate.EntityMode;
 import org.hibernate.SessionFactory;
 import org.hibernate.classic.Session;
 import org.hibernate.criterion.Example;
-import org.hibernate.criterion.MatchMode;
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Restrictions;
 import org.hibernate.metadata.ClassMetadata;
 
 import br.com.arsmachina.dao.DAO;
@@ -35,56 +30,18 @@ import br.com.arsmachina.dao.SortCriterion;
 
 /**
  * {@link AbstractDAO} implementation using Hibernate. All methods use {@link #getSession()} to get
- * a {@link Session}.
- * 
+ * a {@link Session}. All methods delegate its calls to an internal {@link ReadableDAOImpl} or
+ * {@link WriteableDAOImpl} instance.
  * 
  * @author Thiago H. de Paula Figueiredo
  * @param <T> the entity class related to this DAO.
  * @param <K> the type of the field that represents the entity class' primary key.
  */
-public abstract class GenericDAOImpl<T, K extends Serializable> implements DAO<T, K> {
+public class GenericDAOImpl<T, K extends Serializable> implements DAO<T, K> {
 
-	/**
-	 * A {@link SortCriterion} array with no elements.
-	 */
-	final public static SortCriterion[] EMPTY_SORTING_CRITERIA = new SortCriterion[0];
+	final private InternalReadableDAOImpl readableDAO;
 
-	final private SessionFactory sessionFactory;
-
-	final private Class<T> entityClass;
-
-	final private ClassMetadata classMetadata;
-
-	final private String primaryKeyPropertyName;
-
-	final private String defaultHqlOrderBy = toHqlOrderBy(getDefaultSortCriteria());
-
-	/**
-	 * Returns a HQL <code>order by</code> clause given some {@link SortCriterion}s.
-	 * 
-	 * @param sortCriteria {@link SortCriterion} instances.
-	 * @return a {@link String}.
-	 */
-	final public static String toHqlOrderBy(SortCriterion... sortCriteria) {
-
-		String string = "";
-
-		if (sortCriteria.length > 0) {
-
-			StringBuilder builder = new StringBuilder();
-
-			for (int i = 0; i < sortCriteria.length - 1; i++) {
-				builder.append(sortCriteria.toString());
-				builder.append(", ");
-			}
-
-			builder.append(sortCriteria[sortCriteria.length - 1]);
-
-		}
-
-		return string;
-
-	}
+	final private InternalWriteableDAOImpl writeableDAO;
 
 	/**
 	 * Single constructor.
@@ -98,137 +55,97 @@ public abstract class GenericDAOImpl<T, K extends Serializable> implements DAO<T
 			throw new IllegalArgumentException("Parameter sessionFactory cannot be null");
 		}
 
-		this.sessionFactory = sessionFactory;
 		final Type genericSuperclass = getClass().getGenericSuperclass();
 		final ParameterizedType parameterizedType = ((ParameterizedType) genericSuperclass);
-		entityClass = (Class<T>) parameterizedType.getActualTypeArguments()[0];
-		classMetadata = sessionFactory.getClassMetadata(entityClass);
+		Class clasz = (Class<T>) parameterizedType.getActualTypeArguments()[0];
 
-		if (classMetadata == null) {
-			throw new RuntimeException("Class " + entityClass.getName() + " is not mapped");
-		}
-		
-		primaryKeyPropertyName = classMetadata.getIdentifierPropertyName();
+		readableDAO = new InternalReadableDAOImpl(clasz, sessionFactory);
+		writeableDAO = new InternalWriteableDAOImpl(clasz, sessionFactory);
 
-		assert entityClass != null;
-		assert classMetadata != null;
-		assert primaryKeyPropertyName != null;
+	}
 
- 	}
-
-	/**
-	 * @see br.com.arsmachina.dao.ReadableDAO#countAll()
-	 */
 	public int countAll() {
-		
-		final Criteria criteria = createCriteria();
-		
-		criteria.setProjection(Projections.rowCount());
-		
-		return (Integer) criteria.uniqueResult();
-		
+		return readableDAO.countAll();
 	}
-	
-	/**
-	 * Returns all the entity class' objects. They are sorted according to
-	 * {@link #getDefaultSortCriterions()}.
-	 * 
-	 * @see br.com.arsmachina.dao.ReadableDAO#findAll()
-	 * @see #getDefaultSortCriterions()
-	 */
-	@SuppressWarnings("unchecked")
+
 	public List<T> findAll() {
-
-		Criteria criteria = createCriteria();
-		addSortCriteria(criteria, getDefaultSortCriteria());
-		return criteria.list();
-
+		return readableDAO.findAll();
 	}
 
-	/**
-	 * @see br.com.arsmachina.dao.ReadableDAO#findById(java.io.Serializable)
-	 */
-	@SuppressWarnings("unchecked")
-	public T findById(K id) {
-		return (T) getSession().get(entityClass, id);
+	public List<T> findAll(int firstResult, int maxResults, SortCriterion... sortingConstraints) {
+		return readableDAO.findAll(firstResult, maxResults, sortingConstraints);
 	}
 
-	/**
-	 * @see br.com.arsmachina.dao.ReadableDAO#findByIds(K[])
-	 */
-	@SuppressWarnings("unchecked")
-	public List<T> findByIds(K... ids) {
-
-		Criteria criteria = createCriteria();
-		criteria.add(Restrictions.in(primaryKeyPropertyName, ids));
-		return criteria.list();
-
-	}
-
-	/** 
-	 * @see br.com.arsmachina.dao.ReadableDAO#findByExample(java.lang.Object)
-	 */
-	@SuppressWarnings("unchecked")
 	public List<T> findByExample(T example) {
-		
-		Criteria criteria = createCriteria();
-		
-		if (example != null) {
-			criteria.add(createExample(example));
-		}
-		
-		return criteria.list();
-		
+		return readableDAO.findByExample(example);
 	}
 
-	/**
-	 * @see br.com.arsmachina.dao.WriteableDAO#delete(java.io.Serializable)
-	 */
-	public void delete(K id) {
-		delete(findById(id));
+	public T findById(K id) {
+		return readableDAO.findById(id);
 	}
 
-	/**
-	 * @see br.com.arsmachina.dao.WriteableDAO#delete(java.lang.Object)
-	 */
-	public void delete(T object) {
-		getSession().delete(object);
+	public List<T> findByIds(K... ids) {
+		return readableDAO.findByIds(ids);
 	}
 
-	/**
-	 * @see br.com.arsmachina.dao.WriteableDAO#evict(java.lang.Object)
-	 */
-	public void evict(T object) {
-		getSession().evict(object);
-	}
-
-	/**
-	 * @see br.com.arsmachina.dao.WriteableDAO#merge(java.lang.Object)
-	 */
-	@SuppressWarnings("unchecked")
-	public T merge(T object) {
-		return (T) getSession().merge(object);
-	}
-
-	/**
-	 * @see br.com.arsmachina.dao.WriteableDAO#save(java.lang.Object)
-	 */
-	public void save(T object) {
-		getSession().save(object);
-	}
-
-	/**
-	 * @see br.com.arsmachina.dao.WriteableDAO#update(java.lang.Object)
-	 */
-	public void update(T object) {
-		getSession().update(object);
-	}
-
-	/**
-	 * @see br.com.arsmachina.dao.WriteableDAO#refresh(java.lang.Object)
-	 */
 	public void refresh(T object) {
-		getSession().refresh(object);
+		readableDAO.refresh(object);
+	}
+
+	public void delete(T object) {
+		writeableDAO.delete(object);
+	}
+
+	public void delete(K id) {
+		writeableDAO.delete(id);
+	}
+
+	public void evict(T object) {
+		writeableDAO.evict(object);
+	}
+
+	public boolean isPersistent(T object) {
+		return writeableDAO.isPersistent(object);
+	}
+
+	public void save(T object) {
+		writeableDAO.save(object);
+	}
+
+	public void update(T object) {
+		writeableDAO.update(object);
+	}
+
+	public SortCriterion[] getDefaultSortCriteria() {
+		return readableDAO.getDefaultSortCriteria();
+	}
+
+	/**
+	 * Invokes <code>readableDAO.addSortCriteria()<code>.
+	 * @param criteria
+	 * @see br.com.arsmachina.dao.hibernate.ReadableDAOImpl#addSortCriteria(org.hibernate.Criteria)
+	 */
+	protected void addSortCriteria(Criteria criteria) {
+		readableDAO.addSortCriteria(criteria);
+	}
+
+	/**
+	 * Invokes <code>readableDAO.createCriteria()<code>.
+	 * @return
+	 * @see br.com.arsmachina.dao.hibernate.ReadableDAOImpl#createCriteria()
+	 */
+	protected Criteria createCriteria() {
+		return readableDAO.createCriteria();
+	}
+
+	/**
+	 * Invokes <code>readableDAO.createExample()<code>.
+	 * @param entity
+	 * @return
+	 * @see br.com.arsmachina.dao.hibernate.ReadableDAOImpl#createExample(java.lang.Object)
+	 */
+	protected Example createExample(T entity) {
+		return readableDAO.createExample(entity);
 	}
 
 	/**
@@ -236,130 +153,8 @@ public abstract class GenericDAOImpl<T, K extends Serializable> implements DAO<T
 	 * 
 	 * @return a {@link Class<T>}.
 	 */
-	final public Class<T> getEntityClass() {
-		return entityClass;
-	}
-
-	/**
-	 * Returns <code>true</code> if the primary key field (identifier) of the given object is not
-	 * null. Its value is obtained via {@link ClassMetadata#getIdentifier(Object, EntityMode)}.
-	 * 
-	 * @see br.com.arsmachina.dao.WriteableDAO#isPersistent(java.lang.Object)
-	 */
-	public boolean isPersistent(T object) {
-		return classMetadata.getIdentifier(object, EntityMode.POJO) != null;
-	}
-
-	/**
-	 * If <code>sortingConstraints</code> is <code>null</code> or empty, this implementation
-	 * sort the results by the {@link SortCriterion}s returned by
-	 * {@link #getDefaultSortCriterions()}.
-	 * 
-	 * @see br.com.arsmachina.dao.ReadableDAO#findAll(int, int,
-	 * br.com.arsmachina.dao.SortCriterion[])
-	 */
-	@SuppressWarnings("unchecked")
-	public List<T> findAll(int firstResult, int maxResults, SortCriterion... sortingConstraints) {
-
-		Criteria criteria = createCriteria();
-		criteria.setFirstResult(firstResult);
-		criteria.setMaxResults(maxResults);
-
-		if (sortingConstraints == null || sortingConstraints.length == 0) {
-			sortingConstraints = getDefaultSortCriteria();
-		}
-
-		addSortCriteria(criteria, sortingConstraints);
-
-		return criteria.list();
-
-	}
-
-	/**
-	 * Adds <code>sortCriteria</code> to a {@link Criteria} instance.
-	 * 
-	 * @param criteria a {@link Criteria}. It cannot be null.
-	 * @param sortCriteria a {@link SortCriterion}<code>...</code>. It cannot be null.
-	 * @todo Support for property paths, not just property names.
-	 */
-	final public static void addSortCriteria(Criteria criteria, SortCriterion... sortCriteria) {
-
-		assert sortCriteria != null;
-		assert criteria != null;
-
-		for (SortCriterion sortingConstraint : sortCriteria) {
-
-			final String property = sortingConstraint.getProperty();
-			final boolean ascending = sortingConstraint.isAscending();
-			final Order order = ascending ? Order.asc(property) : Order.desc(property);
-			criteria.addOrder(order);
-
-		}
-
-	}
-
-	/**
-	 * Adds the default sort criteria to a {@link Criteria} instance. This method just does
-	 * <code>addSortCriteria(criteria, getDefaultSortCriteria());</code>.
-	 * 
-	 * @param criteria a {@link Criteria}. It cannot be null.
-	 */
-	protected void addSortCriteria(Criteria criteria) {
-		addSortCriteria(criteria, getDefaultSortCriteria());
-	}
-
-	/**
-	 * Returns the default {@link SortCriterion}s to be used to sort the objects lists returned by
-	 * methods like {@link #findAll()} and {@link #findAll(int, int, SortCriterion...)} when no
-	 * sorting constraints are given. This implementation returns {@link #EMPTY_SORTING_CRITERIA}.
-	 * 
-	 * @return a {@link SortCriterion} array. It cannot be <code>null</code>.
-	 */
-	public SortCriterion[] getDefaultSortCriteria() {
-		return EMPTY_SORTING_CRITERIA;
-	}
-
-	/**
-	 * Returns the {@link ClassMetadata} for the corresponding entity class.
-	 * 
-	 * @return a {@link ClassMetadata}.
-	 */
-	final protected ClassMetadata getClassMetadata() {
-		return classMetadata;
-	}
-
-	/**
-	 * Returns the primary key field (identifier) name for the corresponding entity class.
-	 * 
-	 * @return a {@link String}.
-	 */
-	final protected String getPrimaryKeyPropertyName() {
-		return primaryKeyPropertyName;
-	}
-
-	/**
-	 * Creates a {@link Criteria} for this entity class.
-	 * 
-	 * @return a {@link Criteria}.
-	 */
-	protected Criteria createCriteria() {
-		return getSession().createCriteria(entityClass);
-	}
-
-	/**
-	 * Used by {@link #findByExample(Object)} to create an {@link Example} instance.
-	 * 
-	 * @return an {@link Example}.
-	 */
-	protected Example createExample(T entity) {
-		
-		Example example = Example.create(entity);
-		example.enableLike(MatchMode.ANYWHERE);
-		example.excludeZeroes();
-		example.ignoreCase();
-		
-		return example;
-		
+	protected final Class<T> getEntityClass() {
+		return readableDAO.getEntityClass();
 	}
 
 	/**
@@ -369,7 +164,7 @@ public abstract class GenericDAOImpl<T, K extends Serializable> implements DAO<T
 	 * @return a {@link Session}.
 	 */
 	protected Session getSession() {
-		return sessionFactory.getCurrentSession();
+		return getSessionFactory().getCurrentSession();
 	}
 
 	/**
@@ -377,17 +172,56 @@ public abstract class GenericDAOImpl<T, K extends Serializable> implements DAO<T
 	 * 
 	 * @return a {@link SessionFactory}.
 	 */
-	final protected SessionFactory getSessionFactory() {
-		return sessionFactory;
+	protected final SessionFactory getSessionFactory() {
+		return readableDAO.getSessionFactory();
 	}
 
 	/**
-	 * Returns the value of the <code>defaultHqlOrderBy</code> property.
+	 * Returns the {@link ClassMetadata} for the corresponding entity class.
+	 * 
+	 * @return a {@link ClassMetadata}.
+	 */
+	final protected ClassMetadata getClassMetadata() {
+		return readableDAO.getClassMetadata();
+	}
+
+	/**
+	 * Returns the name of the property.
 	 * 
 	 * @return a {@link String}.
 	 */
-	protected final String getDefaultHqlOrderBy() {
-		return defaultHqlOrderBy;
+	public String getPrimaryKeyPropertyName() {
+		return readableDAO.getPrimaryKeyPropertyName();
+	}
+
+	/**
+	 * Concrete {@link ReadableDAOImpl} subclass.
+	 * 
+	 * @author Thiago H. de Paula Figueiredo
+	 * @param <T>
+	 * @param <K>
+	 */
+	private final class InternalReadableDAOImpl extends ReadableDAOImpl<T, K> {
+
+		public InternalReadableDAOImpl(Class<T> clasz, SessionFactory sessionFactory) {
+			super(clasz, sessionFactory);
+		}
+
+	}
+
+	/**
+	 * Concrete {@link WriteableDAOImpl} subclass.
+	 * 
+	 * @author Thiago H. de Paula Figueiredo
+	 * @param <T>
+	 * @param <K>
+	 */
+	private final class InternalWriteableDAOImpl extends WriteableDAOImpl<T, K> {
+
+		public InternalWriteableDAOImpl(Class<T> clasz, SessionFactory sessionFactory) {
+			super(clasz, sessionFactory);
+		}
+
 	}
 
 }

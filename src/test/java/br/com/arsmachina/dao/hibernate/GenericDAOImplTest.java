@@ -89,6 +89,15 @@ public class GenericDAOImplTest {
 		new StringDAO(sessionFactory);
 
 	}
+	
+	@Test
+	public void testReadableDAOImplAlone() {
+
+		DummyReadableDAO dao = new DummyReadableDAO(realSessionFactory);
+		
+		assert dao.getEntityClass() == DummyClass.class;
+		
+	}
 
 	/**
 	 * Tests {@link GenericDAOImpl#save(Object)}.
@@ -180,24 +189,6 @@ public class GenericDAOImplTest {
 	}
 
 	/**
-	 * Tests {@link GenericDAOImpl#merge(<T>))}.
-	 */
-	@Test
-	public void merge() {
-
-		final String merged = "xxx";
-
-		EasyMock.expect(session.merge(OBJECT)).andReturn(merged);
-		EasyMock.replay(session);
-
-		final String result = dao.merge(OBJECT);
-		EasyMock.verify(session);
-
-		assert result == merged;
-
-	}
-
-	/**
 	 * Tests {@link GenericDAOImpl#getEntityClass()}.
 	 */
 	@Test
@@ -259,6 +250,17 @@ public class GenericDAOImplTest {
 			super(sessionFactory);
 		}
 
+	}
+	
+	final private static class DummyReadableDAO extends ReadableDAOImpl<DummyClass, Integer> {
+
+		/**
+		 * @param sessionFactory
+		 */
+		public DummyReadableDAO(SessionFactory sessionFactory) {
+			super(sessionFactory);
+		}
+		
 	}
 
 }

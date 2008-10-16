@@ -6,7 +6,7 @@
 	<groupId>br.com.arsmachina</groupId>
 	<artifactId>generic-dao-hibernate</artifactId>
 	<packaging>jar</packaging>
-	<version>0.9</version>
+	<version>1.0</version>
 	<name>Generic DAO-Hibernate</name>
 	<description>Hibernate Generic Data Access Object (DAO) implementation using Hibernate</description>
 	<inceptionYear>2008</inceptionYear>

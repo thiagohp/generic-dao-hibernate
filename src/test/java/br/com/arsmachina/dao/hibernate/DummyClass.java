@@ -14,8 +14,14 @@
 
 package br.com.arsmachina.dao.hibernate;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+
+import org.hibernate.annotations.CollectionOfElements;
 
 /**
  * 
@@ -25,7 +31,13 @@ import javax.persistence.Id;
 public class DummyClass {
 
 	@Id
+	@GeneratedValue
 	private Integer id;
+
+	private String string;
+
+	@CollectionOfElements
+	private List<Integer> elements = new ArrayList<Integer>();
 
 	/**
 	 * @return a {@link Integer}.
@@ -39,6 +51,42 @@ public class DummyClass {
 	 */
 	public void setId(Integer id) {
 		this.id = id;
+	}
+
+	/**
+	 * Returns the value of the <code>elements</code> property.
+	 * 
+	 * @return a {@link List<Integer>}.
+	 */
+	public List<Integer> getElements() {
+		return elements;
+	}
+
+	/**
+	 * Changes the value of the <code>elements</code> property.
+	 * 
+	 * @param elements a {@link List<Integer>}.
+	 */
+	public void setElements(List<Integer> elements) {
+		this.elements = elements;
+	}
+
+	/**
+	 * Returns the value of the <code>string</code> property.
+	 * 
+	 * @return a {@link String}.
+	 */
+	public String getString() {
+		return string;
+	}
+
+	/**
+	 * Changes the value of the <code>string</code> property.
+	 * 
+	 * @param string a {@link String}.
+	 */
+	public void setString(String string) {
+		this.string = string;
 	}
 
 }

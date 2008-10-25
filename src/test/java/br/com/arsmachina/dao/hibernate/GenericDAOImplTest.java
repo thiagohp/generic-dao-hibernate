@@ -1,17 +1,21 @@
 package br.com.arsmachina.dao.hibernate;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.easymock.EasyMock;
+import org.hibernate.LazyInitializationException;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.AnnotationConfiguration;
 import org.hibernate.classic.Session;
+import org.hibernate.context.ManagedSessionContext;
 import org.hibernate.metadata.ClassMetadata;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import br.com.arsmachina.dao.DAO;
-import br.com.arsmachina.dao.hibernate.GenericDAOImpl;
 
 /**
  * Test class for {@link GenericDAOImpl}.
@@ -36,11 +40,13 @@ public class GenericDAOImplTest {
 
 	@SuppressWarnings("unused")
 	@BeforeClass
-	private void beforeMethod() {
+	private void beforeClass() {
 
 		AnnotationConfiguration configuration = new AnnotationConfiguration();
 		configuration.configure();
+		configuration.setProperty("hibernate.current_session_context_class", "managed");
 		realSessionFactory = configuration.buildSessionFactory();
+		ManagedSessionContext.bind(realSessionFactory.openSession());
 		dummyDAO = new DummyDAO(realSessionFactory);
 
 	}
@@ -132,18 +138,116 @@ public class GenericDAOImplTest {
 
 	}
 
+	@Test
+	public void reattach() {
+		
+		boolean ok = false;
+		DummyClass dummy = createAndInsertDummyObject();
+
+		// force loading of lazy collection
+		dummyDAO.evict(dummy);
+		dummy = dummyDAO.findById(dummy.getId());
+		dummyDAO.evict(dummy);
+		
+		try {
+			
+			final List<Integer> elements = dummy.getElements();
+			for (Integer integer : elements) {
+				integer.toString();
+			}
+			
+		}
+		catch (LazyInitializationException e) {
+			ok = true;
+		}
+		
+		assert ok;
+		
+		final DummyClass reattached = dummyDAO.reattach(dummy);
+		
+		assert dummy == reattached;
+		
+		// force loading of lazy collection
+		final List<Integer> elements = dummy.getElements();
+		for (Integer integer : elements) {
+			integer.toString();
+		}
+		
+	}
+
 	/**
-	 * Tests {@link GenericDAOImpl#save(Object)}.
+	 * Tests {@link GenericDAOImpl#update(Object)} with a real {@link SessionFactory}.
 	 */
 	@Test
 	public void update() {
+		
+		final String SECOND_STRING = "aaaa";
 
-		session.update(OBJECT);
-		EasyMock.replay(session);
+		DummyClass dummy = createAndInsertDummyObject();
+		
+		dummy.setString(SECOND_STRING);
 
-		dao.update(OBJECT);
-		EasyMock.verify(session);
+		session.beginTransaction();
+		DummyClass returned = dummyDAO.update(dummy);
+		session.getTransaction().commit();
+		
+		assert dummy == returned;
+		
+		dummyDAO.evict(dummy);
+		
+		DummyClass secondDummy = dummyDAO.findById(dummy.getId());
+		
+		assert dummy != secondDummy;
+		
+		assert SECOND_STRING.equals(secondDummy.getString());
+		
+		boolean ok = false;
+		
+		DummyClass notPersistent = new DummyClass();
+		
+		try {
+			dummyDAO.update(notPersistent);
+		}
+		catch (IllegalArgumentException e) {
+			ok = true;
+		}
+		
+		assert ok;
+		
+		try {
+			dummyDAO.update(null);
+		}
+		catch (IllegalArgumentException e) {
+			ok = true;
+		}
+		
+		assert ok;
+		
+	}
 
+	/**
+	 * @param FIRST_STRING
+	 * @return
+	 */
+	private DummyClass createAndInsertDummyObject() {
+		
+		final String FIRST_STRING = "bbbb";
+
+		List<Integer> elements = new ArrayList<Integer>();
+		elements.add(1);
+		elements.add(2);
+		
+		DummyClass dummy = new DummyClass();
+		dummy.setElements(elements);
+		dummy.setString(FIRST_STRING);
+		
+		session = dummyDAO.getSession();
+		
+		session.beginTransaction();
+		dummyDAO.save(dummy);
+		session.getTransaction().commit();
+		
+		return dummy;
 	}
 
 	/**

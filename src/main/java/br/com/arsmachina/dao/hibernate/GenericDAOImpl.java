@@ -112,8 +112,12 @@ public class GenericDAOImpl<T, K extends Serializable> implements DAO<T, K> {
 		writeableDAO.save(object);
 	}
 
-	public void update(T object) {
-		writeableDAO.update(object);
+	public T update(T object) {
+		return writeableDAO.update(object);
+	}
+
+	public T reattach(T object) {
+		return readableDAO.reattach(object);
 	}
 
 	public SortCriterion[] getDefaultSortCriteria() {

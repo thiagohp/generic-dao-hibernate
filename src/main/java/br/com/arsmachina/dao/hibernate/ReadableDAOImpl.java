@@ -18,6 +18,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import org.hibernate.Criteria;
+import org.hibernate.LockMode;
 import org.hibernate.SessionFactory;
 import org.hibernate.classic.Session;
 import org.hibernate.criterion.Example;
@@ -37,8 +38,7 @@ import br.com.arsmachina.dao.SortCriterion;
  * @param <T> the entity class related to this DAO.
  * @param <K> the type of the field that represents the entity class' primary key.
  */
-public abstract class ReadableDAOImpl<T, K extends Serializable> extends 
-BaseHibernateDAO<T, K> 
+public abstract class ReadableDAOImpl<T, K extends Serializable> extends BaseHibernateDAO<T, K>
 		implements ReadableDAO<T, K> {
 
 	/**
@@ -68,7 +68,7 @@ BaseHibernateDAO<T, K>
 			}
 
 			builder.append(sortCriteria[sortCriteria.length - 1]);
-			
+
 			string = builder.toString();
 
 		}
@@ -76,7 +76,7 @@ BaseHibernateDAO<T, K>
 		return string;
 
 	}
-	
+
 	/**
 	 * Constructor that takes a {@link Class} and a {@link SessionFactory}.
 	 * 
@@ -87,7 +87,7 @@ BaseHibernateDAO<T, K>
 	public ReadableDAOImpl(SessionFactory sessionFactory) {
 		super(null, sessionFactory);
 	}
-	
+
 	/**
 	 * Constructor that takes a {@link Class} and a {@link SessionFactory}.
 	 * 
@@ -197,6 +197,21 @@ BaseHibernateDAO<T, K>
 	}
 
 	/**
+	 * Reattaches the object to the current {@link org.hibernate.Session} using
+	 * <code>Session.lock(object, LockMode.NONE)</code> and then returns the object.
+	 * 
+	 * @param a <code>T</code>.
+	 * @return <code>object</code>.
+	 * @see br.com.arsmachina.dao.ReadableDAO#reattach(java.lang.Object)
+	 */
+	public T reattach(T object) {
+		
+		getSession().lock(object, LockMode.NONE);
+		return object;
+		
+	}
+	
+	/**
 	 * Adds <code>sortCriteria</code> to a {@link Criteria} instance.
 	 * 
 	 * @param criteria a {@link Criteria}. It cannot be null.
@@ -225,7 +240,7 @@ BaseHibernateDAO<T, K>
 	 * 
 	 * @param criteria a {@link Criteria}. It cannot be null.
 	 */
-	public void addSortCriteria(Criteria criteria) {
+	protected void addSortCriteria(Criteria criteria) {
 		addSortCriteria(criteria, getDefaultSortCriteria());
 	}
 
@@ -275,5 +290,5 @@ BaseHibernateDAO<T, K>
 	public final String getDefaultHqlOrderBy() {
 		return defaultHqlOrderBy;
 	}
-	
+
 }

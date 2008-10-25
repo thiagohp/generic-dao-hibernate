@@ -92,9 +92,16 @@ public abstract class WriteableDAOImpl<T, K extends Serializable> extends BaseHi
 	public void save(T object) {
 		getSession().save(object);
 	}
-
-	public void update(T object) {
+	
+	public T update(T object) {
+		
+		if (isPersistent(object) == false) {
+			throw new IllegalArgumentException("Object not persistent");
+		}
+		
 		getSession().update(object);
+		return object;
+		
 	}
 
 	/**
@@ -102,9 +109,16 @@ public abstract class WriteableDAOImpl<T, K extends Serializable> extends BaseHi
 	 * null. Its value is obtained via {@link ClassMetadata#getIdentifier(Object, EntityMode)}.
 	 * 
 	 * @see br.com.arsmachina.dao.WriteableDAO#isPersistent(java.lang.Object)
+	 * @throws IllegalArgumentException if <code>object</code> is null.
 	 */
 	public boolean isPersistent(T object) {
+		
+		if (object == null) {
+			throw new IllegalArgumentException("Parameter object cannot be null");
+		}
+		
 		return getClassMetadata().getIdentifier(object, EntityMode.POJO) != null;
+		
 	}
 
 }

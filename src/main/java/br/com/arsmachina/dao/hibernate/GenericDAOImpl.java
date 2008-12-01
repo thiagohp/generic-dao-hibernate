@@ -44,7 +44,7 @@ public class GenericDAOImpl<T, K extends Serializable> implements DAO<T, K> {
 	final private InternalWriteableDAOImpl writeableDAO;
 
 	/**
-	 * Single constructor.
+	 * Single public constructor.
 	 * 
 	 * @param sessionFactory a {@link SessionFactory}. It cannot be null.
 	 */
@@ -62,6 +62,28 @@ public class GenericDAOImpl<T, K extends Serializable> implements DAO<T, K> {
 		readableDAO = new InternalReadableDAOImpl(clasz, sessionFactory);
 		writeableDAO = new InternalWriteableDAOImpl(clasz, sessionFactory);
 
+	}
+
+	/**
+	 * Constructor made specifically for {@link ConcreteDAOImpl}. It shouldn't be used in
+	 * any other class. 
+	 * 
+	 * @param clasz the entity class. It cannot be null.
+	 * @param sessionFactory a {@link SessionFactory}. It cannot be null.
+	 */
+	GenericDAOImpl(Class<T> clasz, SessionFactory sessionFactory) {
+		
+		if (clasz == null) {
+			throw new IllegalArgumentException("Parameter clasz cannot be null");
+		}
+		
+		if (sessionFactory == null) {
+			throw new IllegalArgumentException("Parameter sessionFactory cannot be null");
+		}
+		
+		readableDAO = new InternalReadableDAOImpl(clasz, sessionFactory);
+		writeableDAO = new InternalWriteableDAOImpl(clasz, sessionFactory);
+		
 	}
 
 	public int countAll() {

@@ -23,10 +23,11 @@ import org.hibernate.classic.Session;
 import org.hibernate.metadata.ClassMetadata;
 
 /**
+ * Superclass of both {@link ReadableDAOImpl} and {@link WriteableDAOImpl}.
  * 
  * @author Thiago H. de Paula Figueiredo
- * @param <T>
- * @param <K>
+ * @param <T> the entity class related to this DAO.
+ * @param <K> the type of the field that represents the entity class' primary key.
  */
 public class BaseHibernateDAO<T, K extends Serializable> {
 
@@ -84,11 +85,11 @@ public class BaseHibernateDAO<T, K extends Serializable> {
 	 */
 	@SuppressWarnings("unchecked")
 	private Class<T> extractEntityClassFromHierarchy() {
-		
+
 		final Type genericSuperclass = getClass().getGenericSuperclass();
 		final ParameterizedType parameterizedType = ((ParameterizedType) genericSuperclass);
 		return (Class<T>) parameterizedType.getActualTypeArguments()[0];
-		
+
 	}
 
 	/**

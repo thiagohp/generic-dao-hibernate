@@ -94,8 +94,8 @@ public class GenericDAOImpl<T, K extends Serializable> implements DAO<T, K> {
 		return readableDAO.findAll();
 	}
 
-	public List<T> findAll(int firstResult, int maxResults, SortCriterion... sortingConstraints) {
-		return readableDAO.findAll(firstResult, maxResults, sortingConstraints);
+	public List<T> findAll(int firstResult, int maximumResults, SortCriterion... sortingConstraints) {
+		return readableDAO.findAll(firstResult, maximumResults, sortingConstraints);
 	}
 
 	public List<T> findByExample(T example) {
@@ -154,6 +154,18 @@ public class GenericDAOImpl<T, K extends Serializable> implements DAO<T, K> {
 	protected void addSortCriteria(Criteria criteria) {
 		readableDAO.addSortCriteria(criteria);
 	}
+	
+	
+	
+	/**
+	 * Invokes <code>delegate.addSortCriteria()<code>.
+	 * @param criteria
+	 * @param sortCriteria
+	 * @see br.com.arsmachina.dao.hibernate.ReadableDAOImpl#addSortCriteria(org.hibernate.Criteria, br.com.arsmachina.dao.SortCriterion[])
+	 */
+	public final void addSortCriteria(Criteria criteria, SortCriterion... sortCriteria) {
+		readableDAO.addSortCriteria(criteria, sortCriteria);
+	}
 
 	/**
 	 * Invokes <code>readableDAO.createCriteria()<code>.
@@ -162,6 +174,33 @@ public class GenericDAOImpl<T, K extends Serializable> implements DAO<T, K> {
 	 */
 	protected Criteria createCriteria() {
 		return readableDAO.createCriteria();
+	}
+	
+	
+
+	/**
+	 * Invokes <code>delegate.createCriteria()<code>.
+	 * @param sortCriteria
+	 * @return
+	 * @see br.com.arsmachina.dao.hibernate.ReadableDAOImpl#createCriteria(br.com.arsmachina.dao.SortCriterion[])
+	 */
+	protected Criteria createCriteria(SortCriterion... sortCriteria) {
+		return readableDAO.createCriteria(sortCriteria);
+	}
+	
+	
+
+	/**
+	 * Invokes <code>delegate.createCriteria()<code>.
+	 * @param firstIndex
+	 * @param maximumResults
+	 * @param sortCriteria
+	 * @return
+	 * @see br.com.arsmachina.dao.hibernate.ReadableDAOImpl#createCriteria(int, int, br.com.arsmachina.dao.SortCriterion[])
+	 */
+	public Criteria createCriteria(int firstIndex, int maximumResults,
+			SortCriterion... sortCriteria) {
+		return readableDAO.createCriteria(firstIndex, maximumResults, sortCriteria);
 	}
 
 	/**

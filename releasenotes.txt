@@ -1,0 +1,15 @@
+1.0
+* Changed return type of methods update() and saveOrUpdate() from void to T in ReadableDAOImpl and 
+  GenericDAOImpl. 
+* Added method reattach() ReadableDAOImpl and GenericDAOImpl.
+* Added BaseHibernateDAO, ReadableDAOImpl, WriteableDAOImpl, and ConcreteDAOImpl.
+* Refactored GenericDAOImpl to delegate method calls to ReadableDAOImpl and WriteaableDAOImpl. 
+* Added the IdentityProstgresqlDialect.
+* Made addSortCriteria(Criteria criteria, SortCriterion... sortCriteria) non-static and
+  using getDefaultSortCriteria when no sort criteria is given.
+* Added methods createCriateria() to ReadableDAOImpl and GenericDAOImpl.
+* Added methods addSortCriteria(...) to ReadableDAOImpl and GenericDAOImpl
+* Updated Hibernate dependencies.
+
+0.9
+* Initial version

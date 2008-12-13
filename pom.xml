@@ -31,7 +31,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate</artifactId>
+			<artifactId>hibernate-core</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.javaconfig</groupId>
@@ -62,8 +62,9 @@
 			<artifactId>hibernate-commons-annotations</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>cglib</groupId>
-			<artifactId>cglib-nodep</artifactId>
+			<groupId>javassist</groupId>
+			<artifactId>javassist</artifactId>
+			<version>3.8.0.GA</version>
 		</dependency>
 		<dependency>
 			<groupId>br.com.arsmachina</groupId>
@@ -73,6 +74,12 @@
 			<groupId>hsqldb</groupId>
 			<artifactId>hsqldb</artifactId>
 			<version>1.8.0.7</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-simple</artifactId>
+			<version>1.5.2</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

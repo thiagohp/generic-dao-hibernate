@@ -180,11 +180,11 @@ public abstract class ReadableDAOImpl<T, K extends Serializable> extends BaseHib
 	 * br.com.arsmachina.dao.SortCriterion[])
 	 */
 	@SuppressWarnings("unchecked")
-	public List<T> findAll(int firstResult, int maxResults, SortCriterion... sortingConstraints) {
+	public List<T> findAll(int firstResult, int maximumResults, SortCriterion... sortingConstraints) {
 
 		Criteria criteria = createCriteria();
 		criteria.setFirstResult(firstResult);
-		criteria.setMaxResults(maxResults);
+		criteria.setMaxResults(maximumResults);
 
 		if (sortingConstraints == null || sortingConstraints.length == 0) {
 			sortingConstraints = getDefaultSortCriteria();
@@ -218,11 +218,14 @@ public abstract class ReadableDAOImpl<T, K extends Serializable> extends BaseHib
 	 * @param sortCriteria a {@link SortCriterion}<code>...</code>. It cannot be null.
 	 * @todo Support for property paths, not just property names.
 	 */
-	final public static void addSortCriteria(Criteria criteria, SortCriterion... sortCriteria) {
+	final public void addSortCriteria(Criteria criteria, SortCriterion... sortCriteria) {
 
-		assert sortCriteria != null;
 		assert criteria != null;
-
+		
+		if (sortCriteria == null || sortCriteria.length == 0) {
+			sortCriteria = getDefaultSortCriteria();
+		}
+		
 		for (SortCriterion sortingConstraint : sortCriteria) {
 
 			final String property = sortingConstraint.getProperty();
@@ -262,6 +265,34 @@ public abstract class ReadableDAOImpl<T, K extends Serializable> extends BaseHib
 	 */
 	public Criteria createCriteria() {
 		return getSession().createCriteria(getEntityClass());
+	}
+
+	/**
+	 * Creates a {@link Criteria} for this entity class with given sort criteria.
+	 * 
+	 * @return a {@link Criteria}.
+	 */
+	public Criteria createCriteria(SortCriterion ... sortCriteria) {
+		
+		Criteria criteria = createCriteria();
+		addSortCriteria(criteria, sortCriteria);
+		return criteria;
+		
+	}
+
+	/**
+	 * Creates a {@link Criteria} for this entity class with given sort criteria,
+	 * first result index and maximum number of results. 
+	 * 
+	 * @return a {@link Criteria}.
+	 */
+	public Criteria createCriteria(int firstIndex, int maximumResults, SortCriterion ... sortCriteria) {
+		
+		Criteria criteria = createCriteria(sortCriteria);
+		criteria.setFirstResult(firstIndex);
+		criteria.setMaxResults(maximumResults);
+		return criteria;
+		
 	}
 
 	/**

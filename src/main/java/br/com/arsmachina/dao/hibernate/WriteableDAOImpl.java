@@ -53,7 +53,6 @@ public abstract class WriteableDAOImpl<T, K extends Serializable> extends BaseHi
 	 * @param clasz a {@link Class}.
 	 * @param sessionFactory a {@link SessionFactory}. It cannot be null.
 	 */
-	@SuppressWarnings("unchecked")
 	public WriteableDAOImpl(Class<T> clasz, SessionFactory sessionFactory) {
 		
 		super(clasz, sessionFactory);

@@ -31,25 +31,29 @@ import br.com.arsmachina.dao.ReadableDAO;
 import br.com.arsmachina.dao.SortCriterion;
 
 /**
- * {@link ReadableDAO} implementation using Hibernate. All methods use {@link #getSession()} to get
- * {@link Session}.
+ * {@link ReadableDAO} implementation using Hibernate. All methods use
+ * {@link #getSession()} to get {@link Session}.
  * 
  * @author Thiago H. de Paula Figueiredo
  * @param <T> the entity class related to this DAO.
- * @param <K> the type of the field that represents the entity class' primary key.
+ * @param <K> the type of the field that represents the entity class' primary
+ *            key.
  */
-public abstract class ReadableDAOImpl<T, K extends Serializable> extends BaseHibernateDAO<T, K>
-		implements ReadableDAO<T, K> {
+public abstract class ReadableDAOImpl<T, K extends Serializable> extends
+		BaseHibernateDAO<T, K> implements ReadableDAO<T, K> {
 
 	/**
 	 * A {@link SortCriterion} array with no elements.
 	 */
-	final public static SortCriterion[] EMPTY_SORTING_CRITERIA = new SortCriterion[0];
+	final static SortCriterion[] EMPTY_SORTING_CRITERIA = new SortCriterion[0];
 
-	final private String defaultHqlOrderBy = toHqlOrderBy(getDefaultSortCriteria());
+	private String defaultHqlOrderBy;
+
+	private SortCriterion[] defaultSortCriteria = EMPTY_SORTING_CRITERIA;
 
 	/**
-	 * Returns a HQL <code>order by</code> clause given some {@link SortCriterion}s.
+	 * Returns a HQL <code>order by</code> clause given some
+	 * {@link SortCriterion}s.
 	 * 
 	 * @param sortCriteria {@link SortCriterion} instances.
 	 * @return a {@link String}.
@@ -63,7 +67,7 @@ public abstract class ReadableDAOImpl<T, K extends Serializable> extends BaseHib
 			StringBuilder builder = new StringBuilder(" ORDER BY ");
 
 			for (int i = 0; i < sortCriteria.length - 1; i++) {
-				builder.append(sortCriteria.toString());
+				builder.append(sortCriteria[i].toString());
 				builder.append(", ");
 			}
 
@@ -83,7 +87,6 @@ public abstract class ReadableDAOImpl<T, K extends Serializable> extends BaseHib
 	 * @param clasz a {@link Class}.
 	 * @param sessionFactory a {@link SessionFactory}. It cannot be null.
 	 */
-	@SuppressWarnings("unchecked")
 	public ReadableDAOImpl(SessionFactory sessionFactory) {
 		super(null, sessionFactory);
 	}
@@ -94,7 +97,6 @@ public abstract class ReadableDAOImpl<T, K extends Serializable> extends BaseHib
 	 * @param clasz a {@link Class}.
 	 * @param sessionFactory a {@link SessionFactory}. It cannot be null.
 	 */
-	@SuppressWarnings("unchecked")
 	public ReadableDAOImpl(Class<T> clasz, SessionFactory sessionFactory) {
 		super(clasz, sessionFactory);
 	}
@@ -155,6 +157,7 @@ public abstract class ReadableDAOImpl<T, K extends Serializable> extends BaseHib
 	public List<T> findByExample(T example) {
 
 		Criteria criteria = createCriteria();
+		addSortCriteria(criteria);
 
 		if (example != null) {
 			criteria.add(createExample(example));
@@ -172,15 +175,16 @@ public abstract class ReadableDAOImpl<T, K extends Serializable> extends BaseHib
 	}
 
 	/**
-	 * If <code>sortingConstraints</code> is <code>null</code> or empty, this implementation
-	 * sort the results by the {@link SortCriterion}s returned by
+	 * If <code>sortingConstraints</code> is <code>null</code> or empty, this
+	 * implementation sort the results by the {@link SortCriterion}s returned by
 	 * {@link #getDefaultSortCriterions()}.
 	 * 
 	 * @see br.com.arsmachina.dao.ReadableDAO#findAll(int, int,
-	 * br.com.arsmachina.dao.SortCriterion[])
+	 *      br.com.arsmachina.dao.SortCriterion[])
 	 */
 	@SuppressWarnings("unchecked")
-	public List<T> findAll(int firstResult, int maximumResults, SortCriterion... sortingConstraints) {
+	public List<T> findAll(int firstResult, int maximumResults,
+			SortCriterion... sortingConstraints) {
 
 		Criteria criteria = createCriteria();
 		criteria.setFirstResult(firstResult);
@@ -198,39 +202,43 @@ public abstract class ReadableDAOImpl<T, K extends Serializable> extends BaseHib
 
 	/**
 	 * Reattaches the object to the current {@link org.hibernate.Session} using
-	 * <code>Session.lock(object, LockMode.NONE)</code> and then returns the object.
+	 * <code>Session.lock(object, LockMode.NONE)</code> and then returns the
+	 * object.
 	 * 
 	 * @param a <code>T</code>.
 	 * @return <code>object</code>.
 	 * @see br.com.arsmachina.dao.ReadableDAO#reattach(java.lang.Object)
 	 */
 	public T reattach(T object) {
-		
+
 		getSession().lock(object, LockMode.NONE);
 		return object;
-		
+
 	}
-	
+
 	/**
 	 * Adds <code>sortCriteria</code> to a {@link Criteria} instance.
 	 * 
 	 * @param criteria a {@link Criteria}. It cannot be null.
-	 * @param sortCriteria a {@link SortCriterion}<code>...</code>. It cannot be null.
+	 * @param sortCriteria a {@link SortCriterion}<code>...</code>. It cannot be
+	 *            null.
 	 * @todo Support for property paths, not just property names.
 	 */
-	final public void addSortCriteria(Criteria criteria, SortCriterion... sortCriteria) {
+	final public void addSortCriteria(Criteria criteria,
+			SortCriterion... sortCriteria) {
 
 		assert criteria != null;
-		
+
 		if (sortCriteria == null || sortCriteria.length == 0) {
 			sortCriteria = getDefaultSortCriteria();
 		}
-		
+
 		for (SortCriterion sortingConstraint : sortCriteria) {
 
 			final String property = sortingConstraint.getProperty();
 			final boolean ascending = sortingConstraint.isAscending();
-			final Order order = ascending ? Order.asc(property) : Order.desc(property);
+			final Order order =
+				ascending ? Order.asc(property) : Order.desc(property);
 			criteria.addOrder(order);
 
 		}
@@ -238,7 +246,8 @@ public abstract class ReadableDAOImpl<T, K extends Serializable> extends BaseHib
 	}
 
 	/**
-	 * Adds the default sort criteria to a {@link Criteria} instance. This method just does
+	 * Adds the default sort criteria to a {@link Criteria} instance. This
+	 * method just does
 	 * <code>addSortCriteria(criteria, getDefaultSortCriteria());</code>.
 	 * 
 	 * @param criteria a {@link Criteria}. It cannot be null.
@@ -248,14 +257,15 @@ public abstract class ReadableDAOImpl<T, K extends Serializable> extends BaseHib
 	}
 
 	/**
-	 * Returns the default {@link SortCriterion}s to be used to sort the objects lists returned by
-	 * methods like {@link #findAll()} and {@link #findAll(int, int, SortCriterion...)} when no
-	 * sorting constraints are given. This implementation returns {@link #EMPTY_SORTING_CRITERIA}.
+	 * Returns the default {@link SortCriterion}s to be used to sort the objects
+	 * lists returned by methods like {@link #findAll()} and
+	 * {@link #findAll(int, int, SortCriterion...)} when no sorting constraints
+	 * are given. This implementation returns {@link #EMPTY_SORTING_CRITERIA}.
 	 * 
 	 * @return a {@link SortCriterion} array. It cannot be <code>null</code>.
 	 */
 	public SortCriterion[] getDefaultSortCriteria() {
-		return EMPTY_SORTING_CRITERIA;
+		return defaultSortCriteria;
 	}
 
 	/**
@@ -268,38 +278,41 @@ public abstract class ReadableDAOImpl<T, K extends Serializable> extends BaseHib
 	}
 
 	/**
-	 * Creates a {@link Criteria} for this entity class with given sort criteria.
+	 * Creates a {@link Criteria} for this entity class with given sort
+	 * criteria.
 	 * 
 	 * @return a {@link Criteria}.
 	 */
-	public Criteria createCriteria(SortCriterion ... sortCriteria) {
-		
+	public Criteria createCriteria(SortCriterion... sortCriteria) {
+
 		Criteria criteria = createCriteria();
 		addSortCriteria(criteria, sortCriteria);
 		return criteria;
-		
+
 	}
 
 	/**
-	 * Creates a {@link Criteria} for this entity class with given sort criteria,
-	 * first result index and maximum number of results. 
+	 * Creates a {@link Criteria} for this entity class with given sort
+	 * criteria, first result index and maximum number of results.
 	 * 
 	 * @return a {@link Criteria}.
 	 */
-	public Criteria createCriteria(int firstIndex, int maximumResults, SortCriterion ... sortCriteria) {
-		
+	public Criteria createCriteria(int firstIndex, int maximumResults,
+			SortCriterion... sortCriteria) {
+
 		Criteria criteria = createCriteria(sortCriteria);
 		criteria.setFirstResult(firstIndex);
 		criteria.setMaxResults(maximumResults);
 		return criteria;
-		
+
 	}
 
 	/**
-	 * Used by {@link #findByExample(Object)} to create an {@link Example} instance.
+	 * Used by {@link #findByExample(Object)} to create an {@link Example}
+	 * instance.
 	 * 
-	 * @todo add criteria for property types not handled by Example (primary keys, associations,
-	 * etc)
+	 * @todo add criteria for property types not handled by Example (primary
+	 *       keys, associations, etc)
 	 * @return an {@link Example}.
 	 */
 	public Example createExample(T entity) {
@@ -319,7 +332,23 @@ public abstract class ReadableDAOImpl<T, K extends Serializable> extends BaseHib
 	 * @return a {@link String}.
 	 */
 	public final String getDefaultHqlOrderBy() {
+
+		if (defaultHqlOrderBy == null) {
+			defaultHqlOrderBy = toHqlOrderBy(getDefaultSortCriteria());
+		}
+
 		return defaultHqlOrderBy;
+
+	}
+
+	/**
+	 * Altera o valor da propriedade <code>defaultSortCriteria</code>.
+	 * 
+	 * @param <code>defaultSortCriteria</code> o novo valor da propriedade
+	 *        <code>defaultSortCriteria</code>.
+	 */
+	void setDefaultSortCriteria(SortCriterion[] defaultSortCriteria) {
+		this.defaultSortCriteria = defaultSortCriteria;
 	}
 
 }

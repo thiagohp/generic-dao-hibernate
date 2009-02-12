@@ -45,7 +45,6 @@ public class BaseHibernateDAO<T, K extends Serializable> {
 	 * @param clasz a {@link Class}.
 	 * @param sessionFactory a {@link SessionFactory}. It cannot be null.
 	 */
-	@SuppressWarnings("unchecked")
 	public BaseHibernateDAO(SessionFactory sessionFactory) {
 		this(null, sessionFactory);
 	}
@@ -56,7 +55,6 @@ public class BaseHibernateDAO<T, K extends Serializable> {
 	 * @param clasz a {@link Class}.
 	 * @param sessionFactory a {@link SessionFactory}. It cannot be null.
 	 */
-	@SuppressWarnings("unchecked")
 	public BaseHibernateDAO(Class<T> clasz, SessionFactory sessionFactory) {
 
 		if (sessionFactory == null) {

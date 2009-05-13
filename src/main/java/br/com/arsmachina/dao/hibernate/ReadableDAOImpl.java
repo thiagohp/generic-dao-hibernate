@@ -18,6 +18,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import org.hibernate.Criteria;
+import org.hibernate.EntityMode;
 import org.hibernate.LockMode;
 import org.hibernate.SessionFactory;
 import org.hibernate.classic.Session;
@@ -211,7 +212,17 @@ public abstract class ReadableDAOImpl<T, K extends Serializable> extends
 	 */
 	public T reattach(T object) {
 
-		getSession().lock(object, LockMode.NONE);
+		final Session session = getSession();
+		final Serializable id = getClassMetadata().getIdentifier(object, EntityMode.POJO);
+		
+		if (id == null) {
+			throw new IllegalArgumentException("Parameter object must have a non-null identifier");
+		}
+		
+		// avoids NonUniqueObjectException's
+		session.evict(session.load(getEntityClass(), id));
+		
+		session.lock(object, LockMode.NONE);
 		return object;
 
 	}

@@ -210,17 +210,22 @@ public abstract class ReadableDAOImpl<T, K extends Serializable> extends
 	 * @return <code>object</code>.
 	 * @see br.com.arsmachina.dao.ReadableDAO#reattach(java.lang.Object)
 	 */
+	@SuppressWarnings("unchecked")
 	public T reattach(T object) {
 
-		final Session session = getSession();
 		final Serializable id = getClassMetadata().getIdentifier(object, EntityMode.POJO);
 		
 		if (id == null) {
-			throw new IllegalArgumentException("Parameter object must have a non-null identifier");
+			throw new IllegalArgumentException("Object must be persistent to be reattached");
 		}
 		
-		// avoids NonUniqueObjectException's
-		session.evict(session.load(getEntityClass(), id));
+		final Session session = getSession();
+		
+		T other = (T) session.load(getEntityClass(), id);
+		
+		if (other != null && other != object) {
+			session.evict(other);
+		}
 		
 		session.lock(object, LockMode.NONE);
 		return object;

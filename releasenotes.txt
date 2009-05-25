@@ -1,5 +1,7 @@
 1.1
 * Fixed bug regarding default sorting criteria.
+* Improved ReadableDAOImpl.reattach().
+* Replaced usage of org.hibernate.classic.Session to org.hibernate.Session.
 
 1.0
 * Changed return type of methods update() and saveOrUpdate() from void to T in ReadableDAOImpl and 

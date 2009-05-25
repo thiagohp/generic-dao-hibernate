@@ -1,3 +1,16 @@
+// Copyright 2008-2009 Thiago H. de Paula Figueiredo
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 package br.com.arsmachina.dao.hibernate;
 
 
@@ -6,9 +19,9 @@ import java.util.List;
 
 import org.easymock.EasyMock;
 import org.hibernate.LazyInitializationException;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.AnnotationConfiguration;
-import org.hibernate.classic.Session;
 import org.hibernate.context.ManagedSessionContext;
 import org.hibernate.metadata.ClassMetadata;
 import org.testng.annotations.BeforeClass;
@@ -51,14 +64,14 @@ public class GenericDAOImplTest {
 
 	}
 
-	@SuppressWarnings( { "unused", "unchecked" })
+	@SuppressWarnings( { "unused" })
 	@BeforeMethod
 	private void setUp() {
 
 		sessionFactory = EasyMock.createMock(org.hibernate.SessionFactory.class);
 		session = EasyMock.createMock(Session.class);
 
-		EasyMock.expect(sessionFactory.getCurrentSession()).andReturn(session).anyTimes();
+		EasyMock.expect(sessionFactory.getCurrentSession()).andReturn((org.hibernate.classic.Session) session).anyTimes();
 
 		ClassMetadata classMetadata = EasyMock.createMock(ClassMetadata.class);
 
@@ -337,7 +350,6 @@ public class GenericDAOImplTest {
 		/**
 		 * @param dao
 		 */
-		@SuppressWarnings("unchecked")
 		public StringDAO(SessionFactory sessionFactory) {
 			super(sessionFactory);
 		}
@@ -349,7 +361,6 @@ public class GenericDAOImplTest {
 		/**
 		 * @param dao
 		 */
-		@SuppressWarnings("unchecked")
 		public DummyDAO(SessionFactory sessionFactory) {
 			super(sessionFactory);
 		}

@@ -1,14 +1,26 @@
+// Copyright 2008-2009 Thiago H. de Paula Figueiredo
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 package br.com.arsmachina.dao.hibernate;
-
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.easymock.EasyMock;
 import org.hibernate.LazyInitializationException;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.AnnotationConfiguration;
-import org.hibernate.classic.Session;
 import org.hibernate.context.ManagedSessionContext;
 import org.hibernate.metadata.ClassMetadata;
 import org.testng.annotations.BeforeClass;
@@ -33,11 +45,11 @@ public class ConcreteDAOImplTest {
 	private SessionFactory sessionFactory;
 
 	private ConcreteDAOImpl<DummyClass, Integer> dao;
-	
+
 	private ConcreteDAOImpl<DummyClass, Integer> realDAO;
 
 	private SessionFactory realSessionFactory;
-	
+
 	@SuppressWarnings("unused")
 	@BeforeClass
 	private void beforeClass() {
@@ -51,14 +63,15 @@ public class ConcreteDAOImplTest {
 
 	}
 
-	@SuppressWarnings( { "unused", "unchecked" })
+	@SuppressWarnings( { "unused" })
 	@BeforeMethod
 	private void setUp() {
 
 		sessionFactory = EasyMock.createMock(org.hibernate.SessionFactory.class);
 		session = EasyMock.createMock(Session.class);
 
-		EasyMock.expect(sessionFactory.getCurrentSession()).andReturn(session).anyTimes();
+		EasyMock.expect(sessionFactory.getCurrentSession()).andReturn(
+				(org.hibernate.classic.Session) session).anyTimes();
 
 		ClassMetadata classMetadata = EasyMock.createMock(ClassMetadata.class);
 
@@ -105,7 +118,7 @@ public class ConcreteDAOImplTest {
 		new ConcreteDAOImpl(DummyClass.class, sessionFactory);
 
 	}
-	
+
 	/**
 	 * Tests {@link ConcreteDAOImpl#save(Object)}.
 	 */
@@ -139,7 +152,7 @@ public class ConcreteDAOImplTest {
 
 	@Test
 	public void reattach() {
-		
+
 		boolean ok = false;
 		DummyClass dummy = createAndInsertDummyObject();
 
@@ -147,31 +160,31 @@ public class ConcreteDAOImplTest {
 		realDAO.evict(dummy);
 		dummy = realDAO.findById(dummy.getId());
 		realDAO.evict(dummy);
-		
+
 		try {
-			
+
 			final List<Integer> elements = dummy.getElements();
 			for (Integer integer : elements) {
 				integer.toString();
 			}
-			
+
 		}
 		catch (LazyInitializationException e) {
 			ok = true;
 		}
-		
+
 		assert ok;
-		
+
 		final DummyClass reattached = realDAO.reattach(dummy);
-		
+
 		assert dummy == reattached;
-		
+
 		// force loading of lazy collection
 		final List<Integer> elements = dummy.getElements();
 		for (Integer integer : elements) {
 			integer.toString();
 		}
-		
+
 	}
 
 	/**
@@ -179,49 +192,49 @@ public class ConcreteDAOImplTest {
 	 */
 	@Test
 	public void update() {
-		
+
 		final String SECOND_STRING = "aaaa";
 
 		DummyClass dummy = createAndInsertDummyObject();
-		
+
 		dummy.setString(SECOND_STRING);
 
 		session.beginTransaction();
 		DummyClass returned = realDAO.update(dummy);
 		session.getTransaction().commit();
-		
+
 		assert dummy == returned;
-		
+
 		realDAO.evict(dummy);
-		
+
 		DummyClass secondDummy = realDAO.findById(dummy.getId());
-		
+
 		assert dummy != secondDummy;
-		
+
 		assert SECOND_STRING.equals(secondDummy.getString());
-		
+
 		boolean ok = false;
-		
+
 		DummyClass notPersistent = new DummyClass();
-		
+
 		try {
 			realDAO.update(notPersistent);
 		}
 		catch (IllegalArgumentException e) {
 			ok = true;
 		}
-		
+
 		assert ok;
-		
+
 		try {
 			realDAO.update(null);
 		}
 		catch (IllegalArgumentException e) {
 			ok = true;
 		}
-		
+
 		assert ok;
-		
+
 	}
 
 	/**
@@ -229,23 +242,23 @@ public class ConcreteDAOImplTest {
 	 * @return
 	 */
 	private DummyClass createAndInsertDummyObject() {
-		
+
 		final String FIRST_STRING = "bbbb";
 
 		List<Integer> elements = new ArrayList<Integer>();
 		elements.add(1);
 		elements.add(2);
-		
+
 		DummyClass dummy = new DummyClass();
 		dummy.setElements(elements);
 		dummy.setString(FIRST_STRING);
-		
+
 		session = realDAO.getSession();
-		
+
 		session.beginTransaction();
 		realDAO.save(dummy);
 		session.getTransaction().commit();
-		
+
 		return dummy;
 	}
 

@@ -21,7 +21,7 @@ import org.easymock.EasyMock;
 import org.hibernate.LazyInitializationException;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.AnnotationConfiguration;
-import org.hibernate.Session;
+import org.hibernate.classic.Session;
 import org.hibernate.context.ManagedSessionContext;
 import org.hibernate.metadata.ClassMetadata;
 import org.testng.annotations.BeforeClass;
@@ -41,7 +41,7 @@ public class GenericDAOImplTest {
 
 	final static Integer ID = 1;
 
-	private Session session;
+	private org.hibernate.classic.Session session;
 
 	private SessionFactory sessionFactory;
 
@@ -69,9 +69,9 @@ public class GenericDAOImplTest {
 	private void setUp() {
 
 		sessionFactory = EasyMock.createMock(org.hibernate.SessionFactory.class);
-		session = EasyMock.createMock(Session.class);
+		session = EasyMock.createMock(org.hibernate.classic.Session.class);
 
-		EasyMock.expect(sessionFactory.getCurrentSession()).andReturn((org.hibernate.classic.Session) session).anyTimes();
+		EasyMock.expect(sessionFactory.getCurrentSession()).andReturn(session).anyTimes();
 
 		ClassMetadata classMetadata = EasyMock.createMock(ClassMetadata.class);
 
@@ -254,7 +254,7 @@ public class GenericDAOImplTest {
 		dummy.setElements(elements);
 		dummy.setString(FIRST_STRING);
 
-		session = dummyDAO.getSession();
+		session = (Session) dummyDAO.getSession();
 
 		session.beginTransaction();
 		dummyDAO.save(dummy);

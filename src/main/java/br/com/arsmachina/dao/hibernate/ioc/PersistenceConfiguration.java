@@ -14,10 +14,6 @@
 
 package br.com.arsmachina.dao.hibernate.ioc;
 
-import java.beans.PropertyVetoException;
-
-import javax.sql.DataSource;
-
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.AnnotationConfiguration;
 import org.springframework.config.java.annotation.Bean;
@@ -29,8 +25,6 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.orm.hibernate3.HibernateTransactionManager;
 import org.springframework.orm.hibernate3.LocalSessionFactoryBean;
 import org.springframework.transaction.PlatformTransactionManager;
-
-import com.mchange.v2.c3p0.ComboPooledDataSource;
 
 /**
  * Class that configures the persistence layer for Spring. Database info is read from a
@@ -76,50 +70,27 @@ public class PersistenceConfiguration {
 	}
 
 	/**
-	 * Creates a {@link DataSource}.
-	 * 
-	 * @return a {@link DataSource}.
-	 */
-	@Bean
-	public DataSource dataSource() {
-
-		ComboPooledDataSource dataSource = new ComboPooledDataSource();
-
-		dataSource.setJdbcUrl(getDatabaseURL());
-		dataSource.setUser(getDatabaseUsername());
-		dataSource.setPassword(getDatabasePassword());
-
-		try {
-			dataSource.setDriverClass(getJDBCDriver());
-		}
-		catch (PropertyVetoException e) {
-			throw new RuntimeException(e);
-		}
-
-		return dataSource;
-
-	}
-
-	/**
 	 * Creates a {@link SessionFactory} that uses annotations and/or XML for mapping classes.
 	 * 
 	 * @return a {@link SessionFactory}.
 	 */
 	@Bean
 	public SessionFactory sessionFactory() {
-
+		
 		LocalSessionFactoryBean factoryBean = new LocalSessionFactoryBean();
 		factoryBean.setConfigurationClass(AnnotationConfiguration.class);
 		factoryBean.setConfigLocation(new ClassPathResource(HIBERNATE_CONFIGURATION_FILE));
-
+		
 		try {
 			factoryBean.afterPropertiesSet();
 		}
 		catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+		
+		final SessionFactory object = (SessionFactory) factoryBean.getObject();
 
-		return (SessionFactory) factoryBean.getObject();
+		return object;
 
 	}
 
@@ -132,17 +103,6 @@ public class PersistenceConfiguration {
 	public PlatformTransactionManager transactionManager() {
 		return new HibernateTransactionManager(sessionFactory());
 	}
-
-//	@Bean(lazy = Lazy.FALSE)
-//	public OpenSessionInViewInterceptor openSessionInViewInterceptor() {
-//		
-//		final OpenSessionInViewInterceptor interceptor = new OpenSessionInViewInterceptor();
-//		interceptor.setSessionFactory(sessionFactory());
-//		interceptor.afterPropertiesSet();
-//		
-//		return interceptor;
-//		
-//	}
 
 	/**
 	 * Returns the JDBC driver class name.

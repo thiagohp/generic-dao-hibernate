@@ -18,24 +18,20 @@ import org.hibernate.SessionFactory;
 import org.hibernate.cfg.AnnotationConfiguration;
 import org.springframework.config.java.annotation.Bean;
 import org.springframework.config.java.annotation.Configuration;
-import org.springframework.config.java.annotation.ExternalValue;
 import org.springframework.config.java.annotation.Lazy;
-import org.springframework.config.java.annotation.ResourceBundles;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.orm.hibernate3.HibernateTransactionManager;
 import org.springframework.orm.hibernate3.LocalSessionFactoryBean;
 import org.springframework.transaction.PlatformTransactionManager;
 
 /**
- * Class that configures the persistence layer for Spring. Database info is read from a
- * <code>datasource.properties</code> file in the root of the classpath. Hibernate configuration
+ * Class that configures the persistence layer for Spring. Hibernate configuration
  * properties is read from a <code>hibernate.cfg.xml</code> file, also in the root of the
  * classpath.
  * 
  * @author Thiago H. de Paula Figueiredo
  */
 @Configuration(defaultLazy = Lazy.TRUE)
-@ResourceBundles( { "classpath:/datasource" })
 public class PersistenceConfiguration {
 
 	/**
@@ -102,46 +98,6 @@ public class PersistenceConfiguration {
 	@Bean
 	public PlatformTransactionManager transactionManager() {
 		return new HibernateTransactionManager(sessionFactory());
-	}
-
-	/**
-	 * Returns the JDBC driver class name.
-	 * 
-	 * @return a {@link String}.
-	 */
-	@ExternalValue(DATABASE_URL)
-	public String getDatabaseURL() {
-		return "value not set";
-	}
-
-	/**
-	 * Returns the JDBC driver class name.
-	 * 
-	 * @return a {@link String}.
-	 */
-	@ExternalValue(JDBC_DRIVER)
-	public String getJDBCDriver() {
-		return "value not set";
-	}
-
-	/**
-	 * Returns the database user name.
-	 * 
-	 * @return a {@link String}.
-	 */
-	@ExternalValue(DATABASE_USERNAME)
-	public String getDatabaseUsername() {
-		return "value not set";
-	}
-
-	/**
-	 * Returns the database user password.
-	 * 
-	 * @return a {@link String}.
-	 */
-	@ExternalValue(DATABASE_URL)
-	public String getDatabasePassword() {
-		return "value not set";
 	}
 
 }

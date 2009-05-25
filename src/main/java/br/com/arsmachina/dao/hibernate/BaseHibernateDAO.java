@@ -18,8 +18,8 @@ import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Session;
 import org.hibernate.metadata.ClassMetadata;
 
 /**

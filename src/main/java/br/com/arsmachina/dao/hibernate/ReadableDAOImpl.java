@@ -20,8 +20,8 @@ import java.util.List;
 import org.hibernate.Criteria;
 import org.hibernate.EntityMode;
 import org.hibernate.LockMode;
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Session;
 import org.hibernate.criterion.Example;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
@@ -231,6 +231,7 @@ public abstract class ReadableDAOImpl<T, K extends Serializable> extends
 		return object;
 
 	}
+
 	/**
 	 * Adds <code>sortCriteria</code> to a {@link Criteria} instance.
 	 * 

@@ -11,6 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
 package br.com.arsmachina.dao.hibernate;
 
 import java.util.ArrayList;
@@ -18,9 +19,9 @@ import java.util.List;
 
 import org.easymock.EasyMock;
 import org.hibernate.LazyInitializationException;
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.AnnotationConfiguration;
+import org.hibernate.Session;
 import org.hibernate.context.ManagedSessionContext;
 import org.hibernate.metadata.ClassMetadata;
 import org.testng.annotations.BeforeClass;
@@ -70,8 +71,7 @@ public class ConcreteDAOImplTest {
 		sessionFactory = EasyMock.createMock(org.hibernate.SessionFactory.class);
 		session = EasyMock.createMock(Session.class);
 
-		EasyMock.expect(sessionFactory.getCurrentSession()).andReturn(
-				(org.hibernate.classic.Session) session).anyTimes();
+		EasyMock.expect(sessionFactory.getCurrentSession()).andReturn((org.hibernate.classic.Session) session).anyTimes();
 
 		ClassMetadata classMetadata = EasyMock.createMock(ClassMetadata.class);
 

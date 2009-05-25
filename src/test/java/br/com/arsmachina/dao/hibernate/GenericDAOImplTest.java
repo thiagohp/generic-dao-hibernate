@@ -11,17 +11,17 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-package br.com.arsmachina.dao.hibernate;
 
+package br.com.arsmachina.dao.hibernate;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.easymock.EasyMock;
 import org.hibernate.LazyInitializationException;
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.AnnotationConfiguration;
+import org.hibernate.Session;
 import org.hibernate.context.ManagedSessionContext;
 import org.hibernate.metadata.ClassMetadata;
 import org.testng.annotations.BeforeClass;
@@ -48,7 +48,7 @@ public class GenericDAOImplTest {
 	private GenericDAOImpl<String, Integer> dao;
 
 	private SessionFactory realSessionFactory;
-	
+
 	private DummyDAO dummyDAO;
 
 	@SuppressWarnings("unused")
@@ -108,14 +108,14 @@ public class GenericDAOImplTest {
 		new StringDAO(sessionFactory);
 
 	}
-	
+
 	@Test
 	public void testReadableDAOImplAlone() {
 
 		DummyReadableDAO dao = new DummyReadableDAO(realSessionFactory);
-		
+
 		assert dao.getEntityClass() == DummyClass.class;
-		
+
 	}
 
 	/**
@@ -153,7 +153,7 @@ public class GenericDAOImplTest {
 
 	@Test
 	public void reattach() {
-		
+
 		boolean ok = false;
 		DummyClass dummy = createAndInsertDummyObject();
 
@@ -161,31 +161,31 @@ public class GenericDAOImplTest {
 		dummyDAO.evict(dummy);
 		dummy = dummyDAO.findById(dummy.getId());
 		dummyDAO.evict(dummy);
-		
+
 		try {
-			
+
 			final List<Integer> elements = dummy.getElements();
 			for (Integer integer : elements) {
 				integer.toString();
 			}
-			
+
 		}
 		catch (LazyInitializationException e) {
 			ok = true;
 		}
-		
+
 		assert ok;
-		
+
 		final DummyClass reattached = dummyDAO.reattach(dummy);
-		
+
 		assert dummy == reattached;
-		
+
 		// force loading of lazy collection
 		final List<Integer> elements = dummy.getElements();
 		for (Integer integer : elements) {
 			integer.toString();
 		}
-		
+
 	}
 
 	/**
@@ -193,49 +193,49 @@ public class GenericDAOImplTest {
 	 */
 	@Test
 	public void update() {
-		
+
 		final String SECOND_STRING = "aaaa";
 
 		DummyClass dummy = createAndInsertDummyObject();
-		
+
 		dummy.setString(SECOND_STRING);
 
 		session.beginTransaction();
 		DummyClass returned = dummyDAO.update(dummy);
 		session.getTransaction().commit();
-		
+
 		assert dummy == returned;
-		
+
 		dummyDAO.evict(dummy);
-		
+
 		DummyClass secondDummy = dummyDAO.findById(dummy.getId());
-		
+
 		assert dummy != secondDummy;
-		
+
 		assert SECOND_STRING.equals(secondDummy.getString());
-		
+
 		boolean ok = false;
-		
+
 		DummyClass notPersistent = new DummyClass();
-		
+
 		try {
 			dummyDAO.update(notPersistent);
 		}
 		catch (IllegalArgumentException e) {
 			ok = true;
 		}
-		
+
 		assert ok;
-		
+
 		try {
 			dummyDAO.update(null);
 		}
 		catch (IllegalArgumentException e) {
 			ok = true;
 		}
-		
+
 		assert ok;
-		
+
 	}
 
 	/**
@@ -243,23 +243,23 @@ public class GenericDAOImplTest {
 	 * @return
 	 */
 	private DummyClass createAndInsertDummyObject() {
-		
+
 		final String FIRST_STRING = "bbbb";
 
 		List<Integer> elements = new ArrayList<Integer>();
 		elements.add(1);
 		elements.add(2);
-		
+
 		DummyClass dummy = new DummyClass();
 		dummy.setElements(elements);
 		dummy.setString(FIRST_STRING);
-		
+
 		session = dummyDAO.getSession();
-		
+
 		session.beginTransaction();
 		dummyDAO.save(dummy);
 		session.getTransaction().commit();
-		
+
 		return dummy;
 	}
 
@@ -366,7 +366,7 @@ public class GenericDAOImplTest {
 		}
 
 	}
-	
+
 	final private static class DummyReadableDAO extends ReadableDAOImpl<DummyClass, Integer> {
 
 		/**
@@ -375,7 +375,7 @@ public class GenericDAOImplTest {
 		public DummyReadableDAO(SessionFactory sessionFactory) {
 			super(sessionFactory);
 		}
-		
+
 	}
 
 }

@@ -18,8 +18,8 @@ import java.io.Serializable;
 
 import org.hibernate.EntityMode;
 import org.hibernate.Query;
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Session;
 import org.hibernate.metadata.ClassMetadata;
 
 import br.com.arsmachina.dao.WriteableDAO;

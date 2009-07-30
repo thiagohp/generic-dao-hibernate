@@ -212,6 +212,10 @@ public abstract class ReadableDAOImpl<T, K extends Serializable> extends
 	 */
 	@SuppressWarnings("unchecked")
 	public T reattach(T object) {
+		
+		if (object == null) {
+			throw new IllegalArgumentException("Parameter object cannot be null");
+		}
 
 		final Serializable id = getClassMetadata().getIdentifier(object, EntityMode.POJO);
 		

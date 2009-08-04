@@ -18,10 +18,8 @@ import java.io.Serializable;
 import java.util.List;
 
 import org.hibernate.Criteria;
-import org.hibernate.EntityMode;
-import org.hibernate.LockMode;
-import org.hibernate.SessionFactory;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Example;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
@@ -217,21 +215,23 @@ public abstract class ReadableDAOImpl<T, K extends Serializable> extends
 			throw new IllegalArgumentException("Parameter object cannot be null");
 		}
 
-		final Serializable id = getClassMetadata().getIdentifier(object, EntityMode.POJO);
-		
-		if (id == null) {
-			throw new IllegalArgumentException("Object must be persistent to be reattached");
-		}
+//		final Serializable id = getClassMetadata().getIdentifier(object, EntityMode.POJO);
+//		
+//		if (id == null) {
+//			throw new IllegalArgumentException("Object must be persistent to be reattached");
+//		}
 		
 		final Session session = getSession();
 		
-		T other = (T) session.load(getEntityClass(), id);
+		object = (T) session.merge(object);
 		
-		if (other != null && other != object) {
-			session.evict(other);
-		}
-		
-		session.lock(object, LockMode.NONE);
+//		T other = (T) session.load(getEntityClass(), id);
+//		
+//		if (other != null && other != object) {
+//			session.evict(other);
+//		}
+//		
+//		session.lock(object, LockMode.NONE);
 		return object;
 
 	}

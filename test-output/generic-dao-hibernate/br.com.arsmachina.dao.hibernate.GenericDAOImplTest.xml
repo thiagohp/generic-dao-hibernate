@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="br.com.arsmachina.dao.hibernate.GenericDAOImplTest" failures="1" tests="14" time="0.936" errors="0">
+  <properties/>
+  <testcase name="getSessionFactory" time="0.0040" classname="br.com.arsmachina.dao.hibernate.GenericDAOImplTest"/>
+  <testcase name="getClassMetadata" time="0.0010" classname="br.com.arsmachina.dao.hibernate.GenericDAOImplTest"/>
+  <testcase name="save" time="0.0040" classname="br.com.arsmachina.dao.hibernate.GenericDAOImplTest"/>
+  <testcase name="testReadableDAOImplAlone" time="0.0020" classname="br.com.arsmachina.dao.hibernate.GenericDAOImplTest"/>
+  <testcase name="update" time="0.045" classname="br.com.arsmachina.dao.hibernate.GenericDAOImplTest"/>
+  <testcase name="evict" time="0.0010" classname="br.com.arsmachina.dao.hibernate.GenericDAOImplTest"/>
+  <testcase name="refresh" time="0.0010" classname="br.com.arsmachina.dao.hibernate.GenericDAOImplTest"/>
+  <testcase name="getSession" time="0.0010" classname="br.com.arsmachina.dao.hibernate.GenericDAOImplTest"/>
+  <testcase name="constructor" time="0.0020" classname="br.com.arsmachina.dao.hibernate.GenericDAOImplTest"/>
+  <testcase name="getEntityClass" time="0.0020" classname="br.com.arsmachina.dao.hibernate.GenericDAOImplTest"/>
+  <testcase name="delete" time="0.0030" classname="br.com.arsmachina.dao.hibernate.GenericDAOImplTest"/>
+  <testcase name="getPrimaryKeyPropertyName" time="0.0010" classname="br.com.arsmachina.dao.hibernate.GenericDAOImplTest"/>
+  <testcase name="reattach" time="0.014" classname="br.com.arsmachina.dao.hibernate.GenericDAOImplTest">
+    <failure type="java.lang.AssertionError">
+      <![CDATA[java.lang.AssertionError
+	at br.com.arsmachina.dao.hibernate.GenericDAOImplTest.reattach(GenericDAOImplTest.java:181)
+... Removed 22 stack frames]]>
+    </failure>
+  </testcase>
+  <testcase name="isPersistent" time="0.0" classname="br.com.arsmachina.dao.hibernate.GenericDAOImplTest"/>
+</testsuite>

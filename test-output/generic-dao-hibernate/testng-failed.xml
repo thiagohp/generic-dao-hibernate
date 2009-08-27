@@ -1,0 +1,14 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite thread-count="5" skipfailedinvocationCounts="false" verbose="1" name="Failed suite [generic-dao-hibernate]" junit="false" parallel="false" annotations="JDK">
+  <test name="br.com.arsmachina.dao.hibernate.GenericDAOImplTest(failed)" junit="false" parallel="false" annotations="JDK">
+    <classes>
+      <class name="br.com.arsmachina.dao.hibernate.GenericDAOImplTest">
+        <methods>
+          <include name="beforeClass"/>
+          <include name="reattach"/>
+          <include name="setUp"/>
+        </methods>
+      </class>
+    </classes>
+  </test>
+</suite>

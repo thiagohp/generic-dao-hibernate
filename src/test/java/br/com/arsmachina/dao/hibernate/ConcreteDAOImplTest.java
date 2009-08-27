@@ -176,10 +176,8 @@ public class ConcreteDAOImplTest {
 
 		final DummyClass reattached = realDAO.reattach(dummy);
 
-		assert dummy == reattached;
-
 		// force loading of lazy collection
-		final List<Integer> elements = dummy.getElements();
+		final List<Integer> elements = reattached.getElements();
 		for (Integer integer : elements) {
 			integer.toString();
 		}

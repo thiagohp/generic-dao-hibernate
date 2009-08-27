@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="br.com.arsmachina.dao.hibernate.ConcreteDAOImplTest" failures="0" tests="13" time="0.867" errors="0">
+  <properties/>
+  <testcase name="reattach" time="0.048" classname="br.com.arsmachina.dao.hibernate.ConcreteDAOImplTest"/>
+  <testcase name="isPersistent" time="0.0020" classname="br.com.arsmachina.dao.hibernate.ConcreteDAOImplTest"/>
+  <testcase name="getPrimaryKeyPropertyName" time="0.0030" classname="br.com.arsmachina.dao.hibernate.ConcreteDAOImplTest"/>
+  <testcase name="getEntityClass" time="0.01" classname="br.com.arsmachina.dao.hibernate.ConcreteDAOImplTest"/>
+  <testcase name="delete" time="0.0040" classname="br.com.arsmachina.dao.hibernate.ConcreteDAOImplTest"/>
+  <testcase name="refresh" time="0.0010" classname="br.com.arsmachina.dao.hibernate.ConcreteDAOImplTest"/>
+  <testcase name="getSession" time="0.0010" classname="br.com.arsmachina.dao.hibernate.ConcreteDAOImplTest"/>
+  <testcase name="constructor" time="0.0010" classname="br.com.arsmachina.dao.hibernate.ConcreteDAOImplTest"/>
+  <testcase name="update" time="0.0050" classname="br.com.arsmachina.dao.hibernate.ConcreteDAOImplTest"/>
+  <testcase name="evict" time="0.0010" classname="br.com.arsmachina.dao.hibernate.ConcreteDAOImplTest"/>
+  <testcase name="getClassMetadata" time="0.0010" classname="br.com.arsmachina.dao.hibernate.ConcreteDAOImplTest"/>
+  <testcase name="save" time="0.0010" classname="br.com.arsmachina.dao.hibernate.ConcreteDAOImplTest"/>
+  <testcase name="getSessionFactory" time="0.0010" classname="br.com.arsmachina.dao.hibernate.ConcreteDAOImplTest"/>
+</testsuite>
